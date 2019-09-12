@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1600</width>
-    <height>900</height>
+    <width>640</width>
+    <height>325</height>
    </size>
   </property>
   <property name="font">
@@ -41,16 +41,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="6" colspan="3">
-     <widget class="QLabel" name="label_3">
-      <property name="text">
-       <string>Pushed Activities:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="6" rowspan="8" colspan="3">
-     <widget class="QListView" name="activitiesDone"/>
-    </item>
     <item row="0" column="0" rowspan="2">
      <widget class="QLabel" name="label_2">
       <property name="sizePolicy">
@@ -61,6 +51,23 @@
       </property>
       <property name="text">
        <string>Lesson:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="6" rowspan="8" colspan="3">
+     <widget class="QListView" name="activitiesDone"/>
+    </item>
+    <item row="0" column="6" colspan="3">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Pushed Activities:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0" colspan="7">
+     <widget class="QProgressBar" name="lessonProgress">
+      <property name="value">
+       <number>0</number>
       </property>
      </widget>
     </item>
@@ -76,19 +83,6 @@
        <string>Push Activity</string>
       </property>
      </widget>
-    </item>
-    <item row="7" column="9">
-     <spacer name="horizontalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>40</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
     </item>
     <item row="6" column="0">
      <widget class="QComboBox" name="activityList">
@@ -112,12 +106,18 @@
       </property>
      </widget>
     </item>
-    <item row="10" column="0" colspan="7">
-     <widget class="QProgressBar" name="lessonProgress">
-      <property name="value">
-       <number>0</number>
+    <item row="7" column="9">
+     <spacer name="horizontalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-     </widget>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
     </item>
     <item row="5" column="0">
      <widget class="QLabel" name="label">
@@ -145,44 +145,6 @@
       </property>
      </spacer>
     </item>
-    <item row="7" column="0">
-     <spacer name="verticalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::MinimumExpanding</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>20</width>
-        <height>40</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="4" column="0">
-     <widget class="QComboBox" name="lessonList">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>600</width>
-        <height>30</height>
-       </size>
-      </property>
-     </widget>
-    </item>
     <item row="10" column="9">
      <spacer name="horizontalSpacer_4">
       <property name="orientation">
@@ -209,6 +171,28 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="0">
+     <widget class="QComboBox" name="lessonList">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>600</width>
+        <height>30</height>
+       </size>
+      </property>
+     </widget>
+    </item>
     <item row="5" column="2">
      <spacer name="horizontalSpacer_2">
       <property name="orientation">
@@ -225,6 +209,22 @@
       </property>
      </spacer>
     </item>
+    <item row="7" column="0">
+     <spacer name="verticalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::MinimumExpanding</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
     <item row="4" column="2">
      <widget class="QRadioButton" name="radioButton_2">
       <property name="text">
@@ -232,15 +232,8 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="3">
-     <widget class="QRadioButton" name="radioButton_3">
-      <property name="text">
-       <string>3</string>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="3">
-     <spacer name="horizontalSpacer">
+    <item row="4" column="4">
+     <spacer name="horizontalSpacer_12">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -278,8 +271,15 @@
       </property>
      </spacer>
     </item>
-    <item row="4" column="4">
-     <spacer name="horizontalSpacer_12">
+    <item row="4" column="1">
+     <widget class="QRadioButton" name="radioButton">
+      <property name="text">
+       <string>1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="3">
+     <spacer name="horizontalSpacer">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -291,10 +291,17 @@
       </property>
      </spacer>
     </item>
-    <item row="4" column="1">
-     <widget class="QRadioButton" name="radioButton">
+    <item row="4" column="3">
+     <widget class="QRadioButton" name="radioButton_3">
       <property name="text">
-       <string>1</string>
+       <string>3</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Day:</string>
       </property>
      </widget>
     </item>
@@ -345,11 +352,17 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Set_Lesson_Plans">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Set Lesson Plans</string>
    </property>
   </action>
   <action name="action_Set_Class_Repo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Set Class Repo</string>
    </property>
@@ -358,31 +371,49 @@
    </property>
   </action>
   <action name="action_Dark_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;Dark Mode</string>
    </property>
   </action>
   <action name="actionOne_Activity">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>One Activity</string>
    </property>
   </action>
   <action name="actionAll_Unsolved">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>All Unsolved</string>
    </property>
   </action>
   <action name="actionLesson_Name_Solved">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Lesson_Name - Solved</string>
    </property>
   </action>
   <action name="action00_Solved">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>00 - Solved</string>
    </property>
   </action>
   <action name="action00_Lesson_name_Solved">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>00-Lesson_name - Solved</string>
    </property>
@@ -397,8 +428,8 @@
    <slot>update()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>550</x>
-     <y>270</y>
+     <x>624</x>
+     <y>295</y>
     </hint>
     <hint type="destinationlabel">
      <x>490</x>
@@ -413,12 +444,12 @@
    <slot>update()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>550</x>
-     <y>270</y>
+     <x>624</x>
+     <y>295</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>270</y>
+     <x>211</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -429,12 +460,12 @@
    <slot>update()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>550</x>
-     <y>270</y>
+     <x>624</x>
+     <y>295</y>
     </hint>
     <hint type="destinationlabel">
-     <x>181</x>
-     <y>152</y>
+     <x>190</x>
+     <y>148</y>
     </hint>
    </hints>
   </connection>

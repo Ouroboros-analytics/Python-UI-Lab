@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 from PyQt5.QtGui import QKeySequence, QPalette, QColor
 from PyQt5.QtCore import Qt
+import json
 
 
 class Window(QtWidgets.QMainWindow):
@@ -11,6 +12,14 @@ class Window(QtWidgets.QMainWindow):
         super(Window, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        set_path = Path('settings.json')
+        with set_path.open() as settings_file:
+            settings = json.load(settings_file)
+            print(settings)
+            if settings['lessonPath'] == 'null':
+                les_path_sel = QtWidgets.QTreeView()
+                les_path_sel.setWindowTitle('Select Lesson Plans Directory')
+
         lessons = Path(
             '~/Documents/DataViz-Lesson-Plans/01-Lesson-Plans').expanduser()
         lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
@@ -64,21 +73,21 @@ app = QtWidgets.QApplication([])
 app.setStyle("Fusion")
 
 # Now use a palette to switch to dark colors:
-palette = QPalette()
-palette.setColor(QPalette.Window, QColor(53, 53, 53))
-palette.setColor(QPalette.WindowText, Qt.white)
-palette.setColor(QPalette.Base, QColor(25, 25, 25))
-palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-palette.setColor(QPalette.ToolTipBase, Qt.white)
-palette.setColor(QPalette.ToolTipText, Qt.white)
-palette.setColor(QPalette.Text, Qt.white)
-palette.setColor(QPalette.Button, QColor(53, 53, 53))
-palette.setColor(QPalette.ButtonText, Qt.white)
-palette.setColor(QPalette.BrightText, Qt.red)
-palette.setColor(QPalette.Link, QColor(42, 130, 218))
-palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-palette.setColor(QPalette.HighlightedText, Qt.black)
-app.setPalette(palette)
+# palette = QPalette()
+# palette.setColor(QPalette.Window, QColor(53, 53, 53))
+# palette.setColor(QPalette.WindowText, Qt.white)
+# palette.setColor(QPalette.Base, QColor(25, 25, 25))
+# palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+# palette.setColor(QPalette.ToolTipBase, Qt.white)
+# palette.setColor(QPalette.ToolTipText, Qt.white)
+# palette.setColor(QPalette.Text, Qt.white)
+# palette.setColor(QPalette.Button, QColor(53, 53, 53))
+# palette.setColor(QPalette.ButtonText, Qt.white)
+# palette.setColor(QPalette.BrightText, Qt.red)
+# palette.setColor(QPalette.Link, QColor(42, 130, 218))
+# palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+# palette.setColor(QPalette.HighlightedText, Qt.black)
+# app.setPalette(palette)
 
 win = Window()
 win.show()
