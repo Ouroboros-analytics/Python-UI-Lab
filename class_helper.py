@@ -6,6 +6,7 @@ from pathlib import Path
 from PyQt5.QtGui import QKeySequence, QPalette, QColor, QStandardItem, QStandardItemModel
 from PyQt5.QtCore import Qt, pyqtSlot
 import json
+import shutil
 
 
 class Window(QtWidgets.QMainWindow):
@@ -14,8 +15,9 @@ class Window(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         set_path = Path('settings.json')
-        settings = json.load(set_path.open())
-        lessons = Path(settings['lessonPath']).expanduser() / '01-Lesson-Plans'
+        self.settings = json.load(set_path.open())
+        lessons = Path(self.settings['lessonPath']
+                       ).expanduser() / '01-Lesson-Plans'
         lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
         for lesson in lessons_dirs:
             self.ui.lessonList.addItem(lesson.stem)
@@ -32,10 +34,12 @@ class Window(QtWidgets.QMainWindow):
 
         self.ui.lessonList.currentIndexChanged.connect(self.radioClicked)
 
-        self.class_repo = Path(settings['classPath']).expanduser()
+        self.class_repo = Path(self.settings['classPath']).expanduser()
         print(self.class_repo)
         self.ui.activitiesDone.basePath = [
             x for x in self.class_repo.iterdir() if x.is_dir()]
+
+        self.ui.pushActivity.clicked.connect(self.pushActivity)
 
     def radioClicked(self):
         if self.ui.radioButton.isChecked():
@@ -60,11 +64,7 @@ class Window(QtWidgets.QMainWindow):
                 activity_l.addItem(activity.stem)
             activity_l.update()
         except FileNotFoundError:
-            error = QtWidgets.QMessageBox()
-            error.setText('File path does not exist')
-            error.setWindowTitle('Error')
-            error.setIcon(QtWidgets.QMessageBox.Critical)
-            error.exec_()
+            self.error_box
 
     def ignore_check(self):
         actDone = self.ui.activitiesDone
@@ -73,26 +73,49 @@ class Window(QtWidgets.QMainWindow):
         model = QStandardItemModel()
         try:
             ignore_path = Path(actDone.basePath[cur_les]) / '.gitignore'
+
+            with open(ignore_path.as_posix(), 'r') as gitignore:
+                line_count = 0
+                act_count = 0
+                for line in gitignore.read().splitlines():
+                    if line.startswith(cur_day) and line.endswith('Solved'):
+                        line_count += 1
+                    if line.startswith('#' + cur_day):
+                        if line.endswith('Solved'):
+                            act = line.split('/')[2]
+                            model.appendRow(QStandardItem(act))
+                            act_count += 1
+            try:
+                progress = act_count/line_count * 100
+            except ZeroDivisionError:
+                progress = 100
+            self.ui.lessonProgress.setValue(progress)
+            self.ui.lessonProgress.update()
+            actDone.setModel(model)
         except IndexError:
-            pass
-        with open(ignore_path.as_posix(), 'r') as gitignore:
-            line_count = 0
-            act_count = 0
-            for line in gitignore.read().splitlines():
-                if line.startswith(cur_day) and line.endswith('Solved'):
-                    line_count += 1
-                if line.startswith('#' + cur_day):
-                    if line.endswith('Solved'):
-                        act = line.split('/')[2]
-                        model.appendRow(QStandardItem(act))
-                        act_count += 1
+            self.error_box()
+
+    '''
+    def copy2Class(self, src, dest):
         try:
-            progress = act_count/line_count * 100
-        except ZeroDivisionError:
-            progress = 100
-        self.ui.lessonProgress.setValue(progress)
-        self.ui.lessonProgress.update()
-        actDone.setModel(model)
+            shutil.copytree(src, dest)
+        # Directories are the same
+        except shutil.Error as e:
+            print('Directory not copied. Error: %s' % e)
+        # Any error saying that the directory doesn't exist
+        except OSError as e:
+            print('Directory not copied. Error: %s' % e)
+    '''
+
+    def pushActivity(self):
+        self.radioClicked()
+
+    def error_box(self):
+        error = QtWidgets.QMessageBox()
+        error.setText('File path does not exist')
+        error.setWindowTitle('Error')
+        error.setIcon(QtWidgets.QMessageBox.Critical)
+        error.exec_()
 
 
 '''
@@ -118,8 +141,8 @@ app = QtWidgets.QApplication([])
 # Force the style to be the same on all OSs:
 app.setStyle("Fusion")
 
-'''
-Now use a palette to switch to dark colors:
+
+# Now use a palette to switch to dark colors:
 palette = QPalette()
 palette.setColor(QPalette.Window, QColor(53, 53, 53))
 palette.setColor(QPalette.WindowText, Qt.white)
@@ -135,7 +158,7 @@ palette.setColor(QPalette.Link, QColor(42, 130, 218))
 palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
 palette.setColor(QPalette.HighlightedText, Qt.black)
 app.setPalette(palette)
-'''
+
 
 win = Window()
 win.show()
