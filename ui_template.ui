@@ -64,6 +64,13 @@
       </property>
      </widget>
     </item>
+    <item row="0" column="2">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Day:</string>
+      </property>
+     </widget>
+    </item>
     <item row="10" column="0" colspan="7">
      <widget class="QProgressBar" name="lessonProgress">
       <property name="value">
@@ -298,12 +305,18 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>Day:</string>
+    <item row="10" column="10">
+     <spacer name="horizontalSpacer_6">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-     </widget>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>
@@ -328,8 +341,16 @@
      <string>&amp;Settings</string>
     </property>
     <widget class="QMenu" name="menu_Weekly_Setup_Format">
+     <property name="geometry">
+      <rect>
+       <x>1134</x>
+       <y>195</y>
+       <width>135</width>
+       <height>90</height>
+      </rect>
+     </property>
      <property name="title">
-      <string>&amp;Weekly Setup Format</string>
+      <string>&amp;Push Style</string>
      </property>
      <addaction name="actionOne_Activity"/>
      <addaction name="actionAll_Unsolved"/>
