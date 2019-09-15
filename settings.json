@@ -1,6 +1,7 @@
 {
   "lessonPath": "~/Documents/DataViz-Lesson-Plans",
-  "classPath": "~/Documents/Test/Class-MW-Rice-Cookers",
+  "classPath": "~/Documents/Test",
+  "classDay": "Class-MW-Rice-Cookers",
   "pushStyle": "All Unsolved",
   "commitMsg": "Lesson_Name - Solved",
   "theme": "dark"
