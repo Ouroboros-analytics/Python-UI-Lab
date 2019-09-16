@@ -3,13 +3,13 @@ from ui import Ui_MainWindow
 import sys
 import subprocess
 from pathlib import Path
-from PyQt5.QtGui import QKeySequence, QPalette, QColor, QStandardItem, QStandardItemModel
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QKeySequence, QPalette, QColor, QStandardItem, QStandardItemModel, QIcon
+from PyQt5.QtCore import Qt, pyqtSlot, QSize
 import json
 import shutil
 import pprint
 
-app = QtWidgets.QApplication([])
+app = QtWidgets.QApplication(sys.argv)
 
 
 class Window(QtWidgets.QMainWindow):
@@ -18,14 +18,34 @@ class Window(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.set_path = Path('settings.json')
-        self.settings = json.load(self.set_path.open())
-        lessons = Path(self.settings['lessonPath']
-                       ).expanduser() / '01-Lesson-Plans'
-        lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
-        for lesson in lessons_dirs:
-            self.ui.lessonList.addItem(lesson.stem)
+        if self.set_path.exists():
+            self.settings = json.load(self.set_path.open())
+        else:
+            self.set_path.touch()
+            default_set = {"classDay": "None",
+                           "classPath": "None",
+                           "commitMsg": "Lesson_Name - Solved",
+                           "lessonPath": "None",
+                           "pushStyle": "All Unsolved",
+                           "theme": "light"}
+            self.set_path.write_text(json.dumps(default_set))
+            self.settings = json.load(self.set_path.open())
 
-        self.ui.activityList.les_dirs = lessons_dirs
+        if self.settings['lessonPath'] == 'None':
+            self.dir_view()
+        else:
+            lessons = Path(self.settings['lessonPath']
+                           ).expanduser() / '01-Lesson-Plans'
+            lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
+            for lesson in lessons_dirs:
+                self.ui.lessonList.addItem(lesson.stem)
+            self.ui.activityList.les_dirs = lessons_dirs
+
+        if self.settings['lessonPath'] is not 'None':
+            self.ui.action_Set_Lesson_Plans.setChecked(True)
+
+        if self.settings['classPath'] is not 'None':
+            self.ui.action_Set_Class_Repo.setChecked(True)
 
         self.ui.radioButton.value = '1'
         self.ui.radioButton.setChecked(True)
@@ -39,7 +59,6 @@ class Window(QtWidgets.QMainWindow):
 
         self.class_repo = Path(
             self.settings['classPath'], self.settings['classDay']).expanduser()
-        print(self.class_repo)
         self.ui.activitiesDone.basePath = [
             x for x in self.class_repo.iterdir() if x.is_dir()]
 
@@ -53,6 +72,24 @@ class Window(QtWidgets.QMainWindow):
             self.dark_mode()
 
         self.ui.action_Dark_Mode.changed.connect(self.theme_toggle)
+
+        if self.settings['commitMsg'] == 'Lesson_Name - Solved':
+            self.ui.actionLesson_Name_Solved.setChecked(True)
+        elif self.settings['commitMsg'] == '00 - Solved':
+            self.ui.action00_Solved.setChecked(True)
+        elif self.settings['commitMsg'] == '00 - Lesson_name - Solved':
+            self.ui.action00_Lesson_name_Solved.setChecked(True)
+
+        self.ui.commit_group.triggered.connect(self.commit_msg)
+
+        if self.settings['pushStyle'] == 'All Unsolved':
+            self.ui.actionAll_Unsolved.setChecked(True)
+        elif self.settings['pushStyle'] == 'One Activity':
+            self.ui.actionOne_Activity.setChecked(True)
+
+        self.ui.setup_group.triggered.connect(self.setup_style)
+
+        self.ui.pushActivity.clicked.connect(self.push_activity)
 
     def radioClicked(self):
         if self.ui.radioButton.isChecked():
@@ -128,6 +165,25 @@ class Window(QtWidgets.QMainWindow):
             self.ui.action_Dark_Mode.setChecked(False)
             self.set_light_mode()
 
+    def commit_msg(self):
+        active = self.ui.commit_group.checkedAction()
+        print(active.text())
+
+        self.settings['commitMsg'] = active.text()
+        self.set_path.write_text(json.dumps(self.settings))
+
+    def push_activity(self):
+        active = self.ui.commit_group.checkedAction()
+        les_to_push = self.ui.activityList.currentIndex()
+        print(self.ui.activitiesDone.basePath)
+
+    def setup_style(self):
+        active = self.ui.setup_group.checkedAction()
+        print(active.text())
+
+        self.settings['pushStyle'] = active.text()
+        self.set_path.write_text(json.dumps(self.settings))
+
     def set_dark_mode(self):
         print('called dark_mode')
         self.settings["theme"] = "dark"
@@ -176,9 +232,20 @@ class Window(QtWidgets.QMainWindow):
         QtWidgets.qApp.processEvents()
         QtWidgets.qApp.setPalette(lightMode)
 
+    # This doesn't work yet
+    def dir_view(self):
+        self.model = QtWidgets.QFileSystemModel()
+        self.model.setRootPath(str(Path('~').expanduser()))
+        self.view = QtWidgets.QTreeView()
+        self.view.setModel(self.model)
+        self.view.show()
+        print(self.view.treePosition)
 
-# Force the style to be the same on all OSs:
+
 app.setStyle("Fusion")
+app_icon = QIcon()
+app_icon.addFile('img/toolbox.png', QSize(32, 32))
+app.setWindowIcon(app_icon)
 
 win = Window()
 win.show()
