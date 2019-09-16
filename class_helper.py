@@ -7,6 +7,9 @@ from PyQt5.QtGui import QKeySequence, QPalette, QColor, QStandardItem, QStandard
 from PyQt5.QtCore import Qt, pyqtSlot
 import json
 import shutil
+import pprint
+
+app = QtWidgets.QApplication([])
 
 
 class Window(QtWidgets.QMainWindow):
@@ -14,8 +17,8 @@ class Window(QtWidgets.QMainWindow):
         super(Window, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        set_path = Path('settings.json')
-        self.settings = json.load(set_path.open())
+        self.set_path = Path('settings.json')
+        self.settings = json.load(self.set_path.open())
         lessons = Path(self.settings['lessonPath']
                        ).expanduser() / '01-Lesson-Plans'
         lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
@@ -34,12 +37,22 @@ class Window(QtWidgets.QMainWindow):
 
         self.ui.lessonList.currentIndexChanged.connect(self.radioClicked)
 
-        self.class_repo = Path(self.settings['classPath']).expanduser()
+        self.class_repo = Path(
+            self.settings['classPath'], self.settings['classDay']).expanduser()
         print(self.class_repo)
         self.ui.activitiesDone.basePath = [
             x for x in self.class_repo.iterdir() if x.is_dir()]
 
         self.ui.pushActivity.clicked.connect(self.pushActivity)
+
+        if self.settings['theme'] == 'light':
+            self.ui.action_Dark_Mode.setChecked(False)
+            self.light_mode()
+        elif self.settings['theme'] == 'dark':
+            self.ui.action_Dark_Mode.setChecked(True)
+            self.dark_mode()
+
+        self.ui.action_Dark_Mode.changed.connect(self.theme_toggle)
 
     def radioClicked(self):
         if self.ui.radioButton.isChecked():
@@ -90,14 +103,11 @@ class Window(QtWidgets.QMainWindow):
             except ZeroDivisionError:
                 progress = 100
             self.ui.lessonProgress.setValue(progress)
+            QtWidgets.qApp.processEvents()
             self.ui.lessonProgress.update()
             actDone.setModel(model)
         except IndexError:
             self.error_box()
-
-    '''
-    def copy2Class(self, src, dest):
-    '''
 
     def pushActivity(self):
         self.radioClicked()
@@ -109,48 +119,66 @@ class Window(QtWidgets.QMainWindow):
         error.setIcon(QtWidgets.QMessageBox.Critical)
         error.exec_()
 
+    def theme_toggle(self):
+        self.settings
+        if self.settings['theme'] == 'light':
+            self.ui.action_Dark_Mode.setChecked(True)
+            self.set_dark_mode()
+        elif self.settings['theme'] == 'dark':
+            self.ui.action_Dark_Mode.setChecked(False)
+            self.set_light_mode()
 
-'''
-        def term_ops():
-            def pull():
-                subprocess.Popen(
-                    ['pushd', str(self.class_repo), '&&', 'git', 'pull', '&&', 'popd'])
+    def set_dark_mode(self):
+        print('called dark_mode')
+        self.settings["theme"] = "dark"
+        self.set_path.write_text(json.dumps(self.settings))
+        self.dark_mode()
 
-            def push():
-                subprocess.Popen(
-                    ['pushd', str(self.class_repo), '&&', 'git', 'push', '&&', 'popd'])
+    def set_light_mode(self):
+        print('called light_mode')
+        self.settings["theme"] = "light"
+        self.set_path.write_text(json.dumps(self.settings))
+        self.light_mode()
 
-            def commit():
-                self.ui.activityList.cur_les
+    def dark_mode(self):
+        darkMode = QPalette()
+        darkMode.setColor(QPalette.Window, QColor(53, 53, 53))
+        darkMode.setColor(QPalette.WindowText, Qt.white)
+        darkMode.setColor(QPalette.Base, QColor(25, 25, 25))
+        darkMode.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        darkMode.setColor(QPalette.ToolTipBase, Qt.white)
+        darkMode.setColor(QPalette.ToolTipText, Qt.white)
+        darkMode.setColor(QPalette.Text, Qt.white)
+        darkMode.setColor(QPalette.Button, QColor(53, 53, 53))
+        darkMode.setColor(QPalette.ButtonText, Qt.white)
+        darkMode.setColor(QPalette.BrightText, Qt.red)
+        darkMode.setColor(QPalette.Link, QColor(42, 130, 218))
+        darkMode.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        darkMode.setColor(QPalette.HighlightedText, Qt.black)
+        QtWidgets.qApp.processEvents()
+        QtWidgets.qApp.setPalette(darkMode)
 
-                subprocess.Popen(
-                    ['pushd', str(self.class_repo), '&&', 'git', 'commit', '-m', '', '&&', 'popd'])
-'''
+    def light_mode(self):
+        lightMode = QPalette()
+        lightMode.setColor(QPalette.Window, QColor(245, 245, 245))
+        lightMode.setColor(QPalette.WindowText, Qt.black)
+        lightMode.setColor(QPalette.Base, QColor(245, 245, 245))
+        lightMode.setColor(QPalette.AlternateBase, QColor(245, 245, 245))
+        lightMode.setColor(QPalette.ToolTipBase, Qt.black)
+        lightMode.setColor(QPalette.ToolTipText, Qt.black)
+        lightMode.setColor(QPalette.Text, Qt.black)
+        lightMode.setColor(QPalette.Button, QColor(245, 245, 245))
+        lightMode.setColor(QPalette.ButtonText, Qt.black)
+        lightMode.setColor(QPalette.BrightText, Qt.red)
+        lightMode.setColor(QPalette.Link, QColor(42, 130, 218))
+        lightMode.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        lightMode.setColor(QPalette.HighlightedText, Qt.white)
+        QtWidgets.qApp.processEvents()
+        QtWidgets.qApp.setPalette(lightMode)
 
-
-app = QtWidgets.QApplication([])
 
 # Force the style to be the same on all OSs:
 app.setStyle("Fusion")
-
-
-# Now use a palette to switch to dark colors:
-palette = QPalette()
-palette.setColor(QPalette.Window, QColor(53, 53, 53))
-palette.setColor(QPalette.WindowText, Qt.white)
-palette.setColor(QPalette.Base, QColor(25, 25, 25))
-palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-palette.setColor(QPalette.ToolTipBase, Qt.white)
-palette.setColor(QPalette.ToolTipText, Qt.white)
-palette.setColor(QPalette.Text, Qt.white)
-palette.setColor(QPalette.Button, QColor(53, 53, 53))
-palette.setColor(QPalette.ButtonText, Qt.white)
-palette.setColor(QPalette.BrightText, Qt.red)
-palette.setColor(QPalette.Link, QColor(42, 130, 218))
-palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-palette.setColor(QPalette.HighlightedText, Qt.black)
-app.setPalette(palette)
-
 
 win = Window()
 win.show()
