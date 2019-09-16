@@ -172,11 +172,6 @@ class Window(QtWidgets.QMainWindow):
         self.settings['commitMsg'] = active.text()
         self.set_path.write_text(json.dumps(self.settings))
 
-    def push_activity(self):
-        active = self.ui.commit_group.checkedAction()
-        les_to_push = self.ui.activityList.currentIndex()
-        print(self.ui.activitiesDone.basePath)
-
     def setup_style(self):
         active = self.ui.setup_group.checkedAction()
         print(active.text())
