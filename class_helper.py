@@ -89,7 +89,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.ui.setup_group.triggered.connect(self.setup_style)
 
-        self.ui.pushActivity.clicked.connect(self.push_activity)
+        # self.ui.pushActivity.clicked.connect(self.push_activity)
 
     def radioClicked(self):
         if self.ui.radioButton.isChecked():
