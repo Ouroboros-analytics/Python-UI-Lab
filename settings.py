@@ -1,5 +1,5 @@
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from threading import Thread
 
 
@@ -23,9 +23,9 @@ class Settings:
         self.settings_path.touch()
 
         default_set = {
-            'lessonPath': str(self.master_opt[0].as_posix()),
-            'classPath': str(self.class_opt[0].as_posix()),
-            'classDay': 'MW',
+            'lessonPath': str(PurePosixPath('~') / self.master_opt[0].relative_to(Path.home())),
+            'classPath': str(PurePosixPath('~') / self.class_opt[0].relative_to(Path.home())),
+            'classDay': str([x.name for x in Path(self.class_opt[0]).iterdir() if 'MW' in x.name][0]),
             'theme': 'light',
             'pushStyle': 'One Activity',
             'commitMsg': '00 - Solved'
@@ -38,7 +38,7 @@ class Settings:
 
     def findMaster(self):
         self.master_opt = [x.parent
-                           for x in Path('~').expanduser().glob('**/01-Lesson-Plans')]
+                           for x in Path('~').expanduser().glob('**/*1-Lesson-Plans')]
 
     def findClass(self):
         self.class_opt = [x.parent.parent

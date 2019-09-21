@@ -4,6 +4,7 @@
 # Settings
 settings.json
 settings*.json
+test.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

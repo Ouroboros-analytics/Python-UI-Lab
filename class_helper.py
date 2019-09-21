@@ -1,13 +1,18 @@
 from PyQt5 import QtWidgets
 from ui import Ui_MainWindow
+from settings import Settings
 import sys
 import subprocess
 from pathlib import Path
+from os.path import expanduser
 from PyQt5.QtGui import QKeySequence, QPalette, QColor, QStandardItem, QStandardItemModel, QIcon
-from PyQt5.QtCore import Qt, pyqtSlot, QSize
+from PyQt5.QtCore import Qt, pyqtSlot, QSize, QDir
 import json
 import shutil
 import pprint
+import ctypes
+myappid = u'Class Helper'  # arbitrary string
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 app = QtWidgets.QApplication(sys.argv)
 
@@ -21,25 +26,14 @@ class Window(QtWidgets.QMainWindow):
         if self.set_path.exists():
             self.settings = json.load(self.set_path.open())
         else:
-            self.set_path.touch()
-            default_set = {"classDay": "None",
-                           "classPath": "None",
-                           "commitMsg": "Lesson_Name - Solved",
-                           "lessonPath": "None",
-                           "pushStyle": "All Unsolved",
-                           "theme": "light"}
-            self.set_path.write_text(json.dumps(default_set))
-            self.settings = json.load(self.set_path.open())
+            pass
 
-        if self.settings['lessonPath'] == 'None':
-            self.dir_view()
-        else:
-            lessons = Path(self.settings['lessonPath']
-                           ).expanduser() / '01-Lesson-Plans'
-            lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
-            for lesson in lessons_dirs:
-                self.ui.lessonList.addItem(lesson.stem)
-            self.ui.activityList.les_dirs = lessons_dirs
+        lessons = Path(self.settings['lessonPath']
+                       ).expanduser() / '01-Lesson-Plans'
+        lessons_dirs = [x for x in lessons.iterdir() if x.is_dir()]
+        for lesson in lessons_dirs:
+            self.ui.lessonList.addItem(lesson.stem)
+        self.ui.activityList.les_dirs = lessons_dirs
 
         if self.settings['lessonPath'] is not 'None':
             self.ui.action_Set_Lesson_Plans.setChecked(True)
@@ -227,14 +221,31 @@ class Window(QtWidgets.QMainWindow):
         QtWidgets.qApp.processEvents()
         QtWidgets.qApp.setPalette(lightMode)
 
-    # This doesn't work yet
     def dir_view(self):
         self.model = QtWidgets.QFileSystemModel()
         self.model.setRootPath(str(Path('~').expanduser()))
         self.view = QtWidgets.QTreeView()
         self.view.setModel(self.model)
-        self.view.show()
         print(self.view.treePosition)
+
+
+class SecondWindow(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(SecondWindow, self).__init__()
+        self.settings = Settings()
+        self.model = QtWidgets.QFileSystemModel()
+        home = expanduser('~')
+        self.model.setRootPath(home)
+        self.model.setFilter(QDir.AllDirs | QDir.NoDotAndDotDot | QDir.Hidden)
+        self.view = QtWidgets.QTreeView()
+        self.view.setModel(self.model)
+        self.view.setWindowTitle('Choose Lesson Plans Directory')
+        self.view.setFixedSize(500, 300)
+        self.view.setRootIndex(self.model.index())
+        self.view.hideColumn(1)
+        self.view.hideColumn(2)
+        self.view.hideColumn(3)
+        self.view.show()
 
 
 app.setStyle("Fusion")
@@ -242,7 +253,11 @@ app_icon = QIcon()
 app_icon.addFile('img/toolbox.png', QSize(32, 32))
 app.setWindowIcon(app_icon)
 
-win = Window()
-win.show()
+if Path('settings.json').exists():
+    win = Window()
+    win.show()
+else:
+    second_win = SecondWindow()
+
 
 sys.exit(app.exec())
