@@ -236,7 +236,7 @@ class SecondWindow(QtWidgets.QMainWindow):
         self.model = QtWidgets.QFileSystemModel()
         home = expanduser('~')
         self.model.setRootPath(home)
-        self.model.setFilter(QDir.AllDirs | QDir.NoDotAndDotDot | QDir.Hidden)
+        self.model.setFilter(QDir.AllDirs | QDir.NoDotAndDotDot)
         self.view = QtWidgets.QTreeView()
         self.view.setModel(self.model)
         self.view.setWindowTitle('Choose Lesson Plans Directory')
